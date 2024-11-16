@@ -3,5 +3,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2"
+  }
 }

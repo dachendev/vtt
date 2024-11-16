@@ -2,23 +2,26 @@
   "name": "server",
   "private": true,
   "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
-    "cli": "ts-node src/bin/cli.ts"
+    "cli": "tsx src/bin/cli.ts"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "express": "^5.0.1",
+    "morgan": "^1.10.0",
     "pg": "^8.13.1",
     "sequelize": "^6.37.5",
     "umzug": "^3.8.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/yargs": "^17.0.33",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3"
   }

@@ -1,8 +1,13 @@
 import { RequestHandler } from "express";
+import bcrypt from "bcrypt";
 import { User } from "../models/User";
 
 export const createUser: RequestHandler = async (req, res) => {
-  const newUser = await User.create(req.body);
+  const passwordHash = await bcrypt.hash(req.body.password, 10);
+  const newUser = await User.create({
+    username: req.body.username,
+    password: passwordHash,
+  });
   res.status(201).send(newUser);
 };
 
@@ -39,3 +44,4 @@ export const deleteUser: RequestHandler = async (req, res) => {
   await user.destroy();
   res.sendStatus(204);
 };
+

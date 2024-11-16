@@ -1,9 +1,24 @@
-import { DataTypes, Model } from "sequelize";
 import { sequelize } from "@/database";
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "sequelize";
 
-export class User extends Model {}
+export interface UserModel
+  extends Model<
+    InferAttributes<UserModel>,
+    InferCreationAttributes<UserModel>
+  > {
+  id: CreationOptional<number>;
+  username: string;
+  password: string;
+}
 
-User.init(
+export const User = sequelize.define<UserModel>(
+  "User",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -21,9 +36,8 @@ User.init(
     },
   },
   {
-    sequelize,
     underscored: true,
     timestamps: false,
-    modelName: "user",
-  },
+  }
 );
+

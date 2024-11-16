@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "Preserve",
     "outDir": "./dist",
-    "strict": true,
+    "moduleDetection": "force",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "isolatedModules": true,
+    "strict": true,
     "paths": {
       "@/*": ["./src/*"]
     }
-  },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
   }
 }
+

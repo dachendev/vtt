@@ -13,5 +13,4 @@ userRoutes.post("/", createUser);
 userRoutes.get("/", getAllUsers);
 userRoutes.get("/:id", getUserById);
 userRoutes.put("/:id", updateUser);
-
 userRoutes.delete("/:id", deleteUser);
