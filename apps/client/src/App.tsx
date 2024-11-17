@@ -1,3 +1,5 @@
+import { DiceRoller } from "./features/dice";
+
 export const App: React.FC = () => {
-  return <div>Hello React</div>;
+  return <DiceRoller />;
 };
