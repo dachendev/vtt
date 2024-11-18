@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Input, Button, Select, Typography, FormGroup } from "@/features/ui";
 
 type DiceType = (typeof diceTypes)[number];
 
@@ -88,19 +89,19 @@ export const DiceRoller = () => {
   return (
     <div>
       <form onSubmit={onSubmit}>
-        <div>
-          <label htmlFor="count">Count</label>
-          <input
+        <FormGroup>
+          <Input
             id="count"
+            label="Count"
             type="number"
             value={diceCount}
             onChange={(e) => setDiceCount(e.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor="type">Type</label>
-          <select
+        </FormGroup>
+        <FormGroup>
+          <Select
             id="type"
+            label="Type"
             value={selectedDiceType}
             onChange={onDiceTypeChange}
           >
@@ -109,12 +110,12 @@ export const DiceRoller = () => {
                 {diceType}
               </option>
             ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="operation">Operation</label>
-          <select
+          </Select>
+        </FormGroup>
+        <FormGroup>
+          <Select
             id="operation"
+            label="Operation"
             value={selectedOperation}
             onChange={onOperationChange}
           >
@@ -123,24 +124,28 @@ export const DiceRoller = () => {
                 {operationSymbols[operation]}
               </option>
             ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="modifier">Modifier</label>
-          <input
+          </Select>
+        </FormGroup>
+        <FormGroup>
+          <Input
             id="modifier"
+            label="Modifier"
             type="number"
             value={modifier}
             onChange={(e) => setModifier(e.target.value)}
           />
-        </div>
-        <div>
-          <button type="submit">Roll</button>
-        </div>
+        </FormGroup>
+        <FormGroup>
+          <Button type="submit">Roll</Button>
+        </FormGroup>
       </form>
       <div>
-        <p>Values: [{rollValues.join(", ")}]</p>
-        <p>Result: {rollResult}</p>
+        <Typography variant="body" as="p">
+          Values: [{rollValues.join(", ")}]
+        </Typography>
+        <Typography variant="body" as="p">
+          Result: {rollResult}
+        </Typography>
       </div>
     </div>
   );

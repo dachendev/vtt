@@ -1,0 +1,19 @@
+@use "../variables";
+@use "../mixins";
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.select {
+  @include mixins.rounded;
+  display: block;
+  border: 1px solid variables.$border-color;
+  padding: 0.5rem;
+  padding-right: 1rem;
+}
+
+.fullWidth {
+  width: 100%;
+}

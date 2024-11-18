@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Credentials } from "../services/authService";
+import { Input, Button, FormGroup } from "@/features/ui";
 
 interface LoginFormProps {
   onLogin: (credentials: Credentials) => void;
@@ -16,29 +17,33 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
+      <FormGroup>
+        <Input
           id="username"
+          label="Username"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          fullWidth
           required
         />
-      </div>
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
+      </FormGroup>
+      <FormGroup>
+        <Input
           id="password"
+          label="Password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          fullWidth
           required
         />
-      </div>
-      <div>
-        <button type="submit">Login</button>
-      </div>
+      </FormGroup>
+      <FormGroup>
+        <Button type="submit" fullWidth>
+          Login
+        </Button>
+      </FormGroup>
     </form>
   );
 };

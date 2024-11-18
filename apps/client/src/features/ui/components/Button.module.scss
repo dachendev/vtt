@@ -1,0 +1,14 @@
+@use "../variables";
+@use "../mixins";
+
+.button {
+  @include mixins.rounded;
+  display: inline-block;
+  border: 1px solid variables.$border-color;
+  padding: 0.5rem 1rem;
+}
+
+.fullWidth {
+  display: block;
+  width: 100%;
+}
