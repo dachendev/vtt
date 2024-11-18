@@ -1,10 +1,9 @@
 @use "../variables";
-@use "../mixins";
 
 .button {
-  @include mixins.rounded;
   display: inline-block;
-  border: 1px solid variables.$border-color;
+  border: 1px solid variables.$borderColor;
+  border-radius: variables.$borderRadius;
   padding: 0.5rem 1rem;
 }
 

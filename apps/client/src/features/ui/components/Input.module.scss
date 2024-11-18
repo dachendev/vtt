@@ -1,5 +1,4 @@
 @use "../variables";
-@use "../mixins";
 
 .label {
   display: block;
@@ -7,9 +6,9 @@
 }
 
 .input {
-  @include mixins.rounded;
   display: block;
-  border: 1px solid variables.$border-color;
+  border: 1px solid variables.$borderColor;
+  border-radius: variables.$borderRadius;
   padding: 0.5rem;
 }
 
