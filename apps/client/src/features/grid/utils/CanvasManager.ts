@@ -1,4 +1,4 @@
-import { CanvasObject } from "./CanvasObject";
+import { CanvasLayer } from "./CanvasLayer";
 import { clamp, compareDecimals } from "./mathUtils";
 
 const zoomStep = 0.1;
@@ -12,7 +12,7 @@ export class CanvasManager {
   isMouseDown: boolean;
   skewX: number;
   skewY: number;
-  objects: CanvasObject[];
+  layers: CanvasLayer[];
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -26,7 +26,11 @@ export class CanvasManager {
     this.isMouseDown = false;
     this.skewX = 0;
     this.skewY = 0;
-    this.objects = [];
+    this.layers = [];
+  }
+
+  addLayer(layer: CanvasLayer) {
+    this.layers.push(layer);
   }
 
   clear() {
@@ -47,14 +51,10 @@ export class CanvasManager {
     );
   }
 
-  addObject(object: CanvasObject) {
-    this.objects.push(object);
-  }
-
   draw() {
     this.clear();
     this.setTransform();
-    this.objects.forEach((obj) => obj.draw(this.context));
+    this.layers.forEach((layer) => layer.draw(this.context));
   }
 
   scheduleDraw() {

@@ -3,6 +3,7 @@ import styles from "./Canvas.module.scss";
 import { CanvasManager } from "../utils/CanvasManager";
 import { Token } from "../utils/Token";
 import { Grid } from "../utils/Grid";
+import { CanvasLayer } from "../utils/CanvasLayer";
 
 interface CanvasProps extends React.ComponentProps<"canvas"> {}
 
@@ -15,27 +16,28 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const canvas = canvasRef.current;
     const canvasManager = new CanvasManager(canvas);
 
-    const setupCanvas = () => {
-      canvasManager.attachEvents();
+    const gridLayer = new CanvasLayer("grid");
+    canvasManager.addLayer(gridLayer);
 
-      const grid = new Grid({
-        x: 0,
-        y: 0,
-        width: 500,
-        height: 500,
-        squareSize: 50,
-        strokeStyle: "#ccc",
-      });
+    const objectLayer = new CanvasLayer("objects");
+    canvasManager.addLayer(objectLayer);
 
-      canvasManager.addObject(grid);
+    const grid = new Grid({
+      x: 0,
+      y: 0,
+      width: 500,
+      height: 500,
+      squareSize: 50,
+      strokeStyle: "#ccc",
+    });
 
-      const token = new Token(0, 0, 100);
-      canvasManager.addObject(token);
+    gridLayer.addObject(grid);
 
-      canvasManager.scheduleDraw();
-    };
+    const token = new Token(0, 0, 100);
+    objectLayer.addObject(token);
 
-    setupCanvas();
+    canvasManager.attachEvents();
+    canvasManager.scheduleDraw();
 
     return () => canvasManager.detachEvents();
   }, []);

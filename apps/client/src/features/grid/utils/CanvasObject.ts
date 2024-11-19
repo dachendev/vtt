@@ -11,6 +11,15 @@ export class CanvasObject {
     this.height = height;
   }
 
+  containsPoint(x: number, y: number) {
+    return (
+      x >= this.x &&
+      x <= this.x + this.width &&
+      y >= this.y &&
+      y <= this.y + this.height
+    );
+  }
+
   draw(context: CanvasRenderingContext2D) {
     throw new Error("Method not implemented");
   }
