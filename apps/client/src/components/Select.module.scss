@@ -1,19 +1,20 @@
-@use "../variables";
+@use "~styles/variables";
 
-.inputContainer {
+.selectContainer {
   position: relative;
 }
 
-.input {
+.select {
   border: 1px solid variables.$borderColor;
   border-radius: variables.$borderRadius;
   outline: none;
   padding: 0.75rem 1rem;
+  min-width: 120px;
   color: variables.$textColor;
   background: variables.$backgroundColor;
 }
 
-.input:focus {
+.select:focus {
   border-color: variables.$primaryColor;
 }
 
@@ -30,7 +31,7 @@
   pointer-events: none;
 }
 
-.input:focus + .label {
+.select:focus + .label {
   color: variables.$primaryColor;
 }
 

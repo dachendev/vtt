@@ -1,6 +1,6 @@
 import { LogoutButton, useSession } from "@/features/auth";
 import { DiceRoller } from "@/features/dice";
-import { Card, Container, Typography } from "@/components/ui";
+import { Container, Typography } from "@/components";
 import { useState } from "react";
 import { Moveable } from "@/components/ui/components/Moveable";
 

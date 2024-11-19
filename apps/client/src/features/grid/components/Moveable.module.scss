@@ -1,10 +1,9 @@
-@use "../variables";
+@use "~styles/variables";
 
 .moveable {
   --border-color: #{variables.$borderColor};
   position: absolute;
   color: variables.$textColor;
-  background: variables.$backgroundColor;
   z-index: 50;
 }
 
@@ -30,4 +29,5 @@
   border-bottom-left-radius: variables.$borderRadius;
   border-bottom-right-radius: variables.$borderRadius;
   padding: 2rem;
+  background: variables.$backgroundColor;
 }

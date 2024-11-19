@@ -6,7 +6,7 @@ import {
   Typography,
   FormGroup,
   Card,
-} from "@/components/ui";
+} from "@/components";
 
 interface DiceRollerProps extends React.ComponentProps<"div"> {
   onRoll: (result: number, values: number[]) => void;

@@ -1,4 +1,4 @@
-import { Container, Typography, Card } from "@/components/ui";
+import { Container, Typography, Card } from "@/components";
 import { LoginForm } from "../components/LoginForm";
 import { useSession } from "../contexts/SessionContext";
 import { Credentials, loginWithCredentials } from "../services/authService";
