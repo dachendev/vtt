@@ -1,30 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import styles from "./Moveable.module.scss";
+import styles from "./Draggable.module.scss";
 import cn from "classnames";
 
-interface MoveableProps extends React.ComponentProps<"div"> {}
+interface DraggableProps extends React.ComponentProps<"div"> {}
 
-export const Moveable: React.FC<MoveableProps> = ({ children }) => {
-  const [isPressed, setIsPressed] = useState(false);
+export const Draggable: React.FC<DraggableProps> = ({ children }) => {
+  const [isDragging, setIsDragging] = useState(false);
   const positionRef = useRef({ x: 0, y: 0 });
   const divRef = useRef<HTMLDivElement>(null);
 
-  const onHandlePressed = () => {
-    setIsPressed(true);
-    if (divRef.current) {
-      divRef.current.style.userSelect = "none";
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button === 0) {
+      setIsDragging(true);
     }
   };
 
   const onMouseUp = () => {
-    setIsPressed(false);
-    if (divRef.current) {
-      divRef.current.style.userSelect = "auto";
-    }
+    setIsDragging(false);
   };
 
   const onMouseMove = (e: MouseEvent) => {
-    if (!isPressed || !divRef.current) return;
+    if (!isDragging || !divRef.current) return;
 
     const { movementX, movementY } = e;
     const position = positionRef.current;
@@ -46,18 +42,15 @@ export const Moveable: React.FC<MoveableProps> = ({ children }) => {
       document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("mousemove", onMouseMove);
     };
-  }, [isPressed]);
+  }, [isDragging]);
 
-  const moveableStyles = cn(styles.moveable, {
-    [styles.isPressed]: isPressed,
+  const draggableStyles = cn(styles.draggable, {
+    [styles.isPressed]: isDragging,
   });
 
   return (
-    <div ref={divRef} className={moveableStyles}>
-      <div
-        className={styles.moveableHandle}
-        onMouseDown={onHandlePressed}
-      ></div>
+    <div ref={divRef} className={draggableStyles}>
+      <div className={styles.moveableHandle} onMouseDown={onMouseDown}></div>
       <div className={styles.moveableContent}>{children}</div>
     </div>
   );

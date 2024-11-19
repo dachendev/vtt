@@ -1,6 +1,6 @@
 @use "~styles/variables";
 
-.moveable {
+.draggable {
   --border-color: #{variables.$borderColor};
   position: absolute;
   color: variables.$textColor;
@@ -9,6 +9,7 @@
 
 .isPressed {
   --border-color: #{variables.$primaryColor};
+  user-select: none;
 }
 
 .moveableHandle {
