@@ -16,7 +16,7 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const canvasManager = new CanvasManager(canvas);
 
     const setupCanvas = () => {
-      canvasManager.setup();
+      canvasManager.attachEvents();
 
       const grid = new Grid({
         x: 0,
@@ -37,7 +37,7 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
 
     setupCanvas();
 
-    return () => canvasManager.destroy();
+    return () => canvasManager.detachEvents();
   }, []);
 
   return <canvas ref={canvasRef} className={styles.canvas} {...props} />;

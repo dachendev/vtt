@@ -1,4 +1,5 @@
 import { CanvasObject } from "./CanvasObject";
+import { clamp, compareDecimals } from "./mathUtils";
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
@@ -61,10 +62,18 @@ export class CanvasManager {
   }
 
   onWheel(e: WheelEvent) {
-    this.zoom =
-      e.deltaY < 0
-        ? Math.min(this.zoom + zoomStep, zoomMax)
-        : Math.max(this.zoom - zoomStep, zoomMin);
+    const zoomChange = e.deltaY < 0 ? zoomStep : -zoomStep;
+    const newZoom = clamp(this.zoom + zoomChange, zoomMin, zoomMax);
+    if (compareDecimals(newZoom, this.zoom)) return;
+
+    const { left, top } = this.canvas.getBoundingClientRect();
+    const mouseX = e.clientX - left;
+    const mouseY = e.clientY - top;
+    const zoomRatio = newZoom / this.zoom;
+
+    this.skewX += (mouseX - this.skewX) * (1 - zoomRatio);
+    this.skewY += (mouseY - this.skewY) * (1 - zoomRatio);
+    this.zoom = newZoom;
 
     this.scheduleDraw();
   }
@@ -91,7 +100,7 @@ export class CanvasManager {
     this.isMouseDown = false;
   }
 
-  setup() {
+  attachEvents() {
     this.canvas.addEventListener("wheel", this.onWheel.bind(this));
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mouseout", this.onMouseOut.bind(this));
@@ -99,7 +108,7 @@ export class CanvasManager {
     window.addEventListener("mousemove", this.onMouseMove.bind(this));
   }
 
-  destroy() {
+  detachEvents() {
     this.canvas.removeEventListener("wheel", this.onWheel.bind(this));
     this.canvas.removeEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.removeEventListener("mouseout", this.onMouseOut.bind(this));
