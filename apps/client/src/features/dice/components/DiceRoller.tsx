@@ -8,6 +8,10 @@ import {
   Card,
 } from "@/features/ui";
 
+interface DiceRollerProps extends React.ComponentProps<"div"> {
+  onRoll: (result: number, values: number[]) => void;
+}
+
 type DiceType = (typeof diceTypes)[number];
 
 type Operation = (typeof operations)[number];
@@ -45,13 +49,11 @@ const rollMultiple = (count: number, sides: number) => {
   return Array.from({ length: count }, () => roll(sides));
 };
 
-export const DiceRoller = () => {
+export const DiceRoller: React.FC<DiceRollerProps> = ({ onRoll, ...props }) => {
   const [diceCount, setDiceCount] = useState("");
   const [selectedDiceType, setSelectedDiceType] = useState<DiceType>("d4");
   const [selectedOperation, setSelectedOperation] = useState<Operation>("add");
   const [modifier, setModifier] = useState("");
-  const [rollValues, setRollValues] = useState<number[]>([]);
-  const [rollResult, setRollResult] = useState<number>();
 
   const onDiceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const diceType = e.target.value;
@@ -89,12 +91,11 @@ export const DiceRoller = () => {
         break;
     }
 
-    setRollValues(rollValues);
-    setRollResult(rollResult);
+    onRoll(rollResult, rollValues);
   };
 
   return (
-    <Card>
+    <div {...props}>
       <form onSubmit={onSubmit}>
         <FormGroup>
           <Input
@@ -142,20 +143,10 @@ export const DiceRoller = () => {
             onChange={(e) => setModifier(e.target.value)}
           />
         </FormGroup>
-        <FormGroup>
-          <Button variant="neutral" type="submit">
-            Roll
-          </Button>
-        </FormGroup>
+        <Button variant="neutral" type="submit">
+          Roll
+        </Button>
       </form>
-      <div>
-        <Typography variant="body" as="p">
-          Values: {rollValues.join(", ")}
-        </Typography>
-        <Typography variant="body" as="p">
-          Result: {rollResult}
-        </Typography>
-      </div>
-    </Card>
+    </div>
   );
 };
