@@ -18,13 +18,13 @@ export const Select: React.FC<SelectProps> = ({
     [styles.fullWidth]: fullWidth,
   });
   return (
-    <>
-      <label htmlFor={id} className={styles.label}>
-        {label}
-      </label>
+    <div className={styles.selectContainer}>
       <select id={id} className={selectStyles} {...props}>
         {children}
       </select>
-    </>
+      <label htmlFor={id} className={styles.label}>
+        {label}
+      </label>
+    </div>
   );
 };

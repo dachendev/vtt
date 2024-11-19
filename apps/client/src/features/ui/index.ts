@@ -4,3 +4,4 @@ export * from "./components/FormGroup";
 export * from "./components/Input";
 export * from "./components/Select";
 export * from "./components/Typography";
+export * from "./components/Card";

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Input, Button, Select, Typography, FormGroup } from "@/features/ui";
+import {
+  Input,
+  Button,
+  Select,
+  Typography,
+  FormGroup,
+  Card,
+} from "@/features/ui";
 
 type DiceType = (typeof diceTypes)[number];
 
@@ -87,7 +94,7 @@ export const DiceRoller = () => {
   };
 
   return (
-    <div>
+    <Card>
       <form onSubmit={onSubmit}>
         <FormGroup>
           <Input
@@ -136,17 +143,19 @@ export const DiceRoller = () => {
           />
         </FormGroup>
         <FormGroup>
-          <Button type="submit">Roll</Button>
+          <Button variant="neutral" type="submit">
+            Roll
+          </Button>
         </FormGroup>
       </form>
       <div>
         <Typography variant="body" as="p">
-          Values: [{rollValues.join(", ")}]
+          Values: {rollValues.join(", ")}
         </Typography>
         <Typography variant="body" as="p">
           Result: {rollResult}
         </Typography>
       </div>
-    </div>
+    </Card>
   );
 };

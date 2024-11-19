@@ -40,7 +40,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         />
       </FormGroup>
       <FormGroup>
-        <Button type="submit" fullWidth>
+        <Button variant="primary" type="submit" fullWidth>
           Login
         </Button>
       </FormGroup>

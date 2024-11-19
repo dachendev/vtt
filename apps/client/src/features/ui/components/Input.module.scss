@@ -1,17 +1,40 @@
 @use "../variables";
 
-.label {
-  display: block;
-  margin-bottom: 0.5rem;
+.inputContainer {
+  position: relative;
 }
 
 .input {
-  display: block;
   border: 1px solid variables.$borderColor;
   border-radius: variables.$borderRadius;
-  padding: 0.5rem;
+  outline: none;
+  padding: 0.75rem 1rem;
+  color: variables.$textColor;
+  background: variables.$backgroundColor;
+}
+
+.input:focus {
+  border-color: variables.$primaryColor;
+}
+
+.label {
+  position: absolute;
+  top: -0.5rem;
+  left: 1rem;
+  border-radius: variables.$borderRadius;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  font-size: 0.875rem;
+  color: #888;
+  background: variables.$backgroundColor;
+  pointer-events: none;
+}
+
+.input:focus + .label {
+  color: variables.$primaryColor;
 }
 
 .fullWidth {
+  display: block;
   width: 100%;
 }
