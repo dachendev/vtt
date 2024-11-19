@@ -2,8 +2,10 @@
 
 .moveable {
   --border-color: #{variables.$borderColor};
+  position: absolute;
   color: variables.$textColor;
   background: variables.$backgroundColor;
+  z-index: 50;
 }
 
 .isPressed {
