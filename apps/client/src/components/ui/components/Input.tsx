@@ -19,7 +19,7 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <div className={styles.inputContainer}>
-      <input id={id} className={inputStyles} placeholder=" " {...props} />
+      <input id={id} className={inputStyles} {...props} />
       <label htmlFor={id} className={styles.label}>
         {label}
       </label>
