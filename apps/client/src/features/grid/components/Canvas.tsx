@@ -19,6 +19,14 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
       throw new Error("Failed to get CanvasRenderingContext2D");
     }
 
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    const zoom = zoomRef.current;
+    context.setTransform({
+      a: zoom,
+      d: zoom,
+    });
+
     const bounds = boundsRef.current;
     const boundsRect = {
       top: bounds.y,
@@ -27,21 +35,18 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
       right: bounds.x + bounds.width,
     };
 
-    const zoom = zoomRef.current;
     const squareSize = 50;
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.beginPath();
 
     for (let x = boundsRect.left; x < boundsRect.right; x += squareSize) {
-      context.moveTo(x * zoom, boundsRect.top * zoom);
-      context.lineTo(x * zoom, boundsRect.bottom * zoom);
+      context.moveTo(x, boundsRect.top);
+      context.lineTo(x, boundsRect.bottom);
     }
 
     for (let y = boundsRect.top; y < boundsRect.bottom; y += squareSize) {
-      context.moveTo(boundsRect.left * zoom, y * zoom);
-      context.lineTo(boundsRect.right * zoom, y * zoom);
+      context.moveTo(boundsRect.left, y);
+      context.lineTo(boundsRect.right, y);
     }
 
     context.strokeStyle = "#ccc";
