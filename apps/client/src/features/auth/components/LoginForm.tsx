@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Credentials } from "../services/authService";
-import { Input, Button, FormGroup } from "@/features/ui";
+import { Input, Button, FormGroup } from "@/components/ui";
 
 interface LoginFormProps {
   onLogin: (credentials: Credentials) => void;

@@ -1,6 +1,6 @@
 import { LogoutButton, useSession } from "@/features/auth";
 import { DiceRoller } from "@/features/dice";
-import { Card, Container, Typography } from "@/features/ui";
+import { Card, Container, Typography } from "@/components/ui";
 import { useState } from "react";
 
 export const Dashboard = () => {
