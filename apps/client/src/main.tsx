@@ -3,7 +3,7 @@ import { SessionProvider } from "./features/auth";
 import { Router } from "./Router";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
-import "./main.scss";
+import "./styles/global.scss";
 
 createRoot(document.getElementById("root")!).render(
   <SessionProvider>

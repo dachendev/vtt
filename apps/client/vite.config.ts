@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { fileURLToPath } from "url";
+import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [tsconfigPaths(), react()],
   css: {
     preprocessorOptions: {
       scss: {
@@ -13,7 +14,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "~": path.resolve(__dirname, "node_modules"),
+      "~styles": path.resolve(__dirname, "src/styles"),
     },
   },
 });
