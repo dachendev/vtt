@@ -2,6 +2,7 @@ import { LogoutButton, useSession } from "@/features/auth";
 import { DiceRoller } from "@/features/dice";
 import { Card, Container, Typography } from "@/components/ui";
 import { useState } from "react";
+import { Moveable } from "@/components/ui/components/Moveable";
 
 export const Dashboard = () => {
   const { user } = useSession();
@@ -22,7 +23,7 @@ export const Dashboard = () => {
             <LogoutButton />
           </div>
         )}
-        <Card style={{ marginBottom: "1rem" }}>
+        <Moveable>
           <DiceRoller onRoll={onRoll} style={{ marginBottom: "1rem" }} />
           <Typography variant="body" as="p">
             Values: {rollValues?.join(", ")}
@@ -30,7 +31,7 @@ export const Dashboard = () => {
           <Typography variant="body" as="p">
             Result: {rollResult}
           </Typography>
-        </Card>
+        </Moveable>
       </Container>
     </div>
   );

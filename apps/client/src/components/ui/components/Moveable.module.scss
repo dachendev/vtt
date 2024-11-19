@@ -1,0 +1,31 @@
+@use "../variables";
+
+.moveable {
+  --border-color: #{variables.$borderColor};
+  color: variables.$textColor;
+  background: variables.$backgroundColor;
+}
+
+.isPressed {
+  --border-color: #{variables.$primaryColor};
+}
+
+.moveableHandle {
+  border: 1px solid var(--border-color);
+  border-top-left-radius: variables.$borderRadius;
+  border-top-right-radius: variables.$borderRadius;
+  height: 1.5rem;
+  background: #ddd;
+}
+
+.isPressed .moveableHandle {
+  background: variables.$primaryColor;
+}
+
+.moveableContent {
+  margin-top: -1px;
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: variables.$borderRadius;
+  border-bottom-right-radius: variables.$borderRadius;
+  padding: 2rem;
+}
