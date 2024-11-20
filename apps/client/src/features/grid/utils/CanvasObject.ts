@@ -1,7 +1,13 @@
-export class CanvasObject extends EventTarget {
+import { CanvasEventTarget } from "./CanvasEventTarget";
+
+export class CanvasObject extends CanvasEventTarget {
   constructor(public x: number, public y: number) {
     super();
   }
+
+  setup() {}
+
+  destroy() {}
 
   draw(context: CanvasRenderingContext2D) {
     throw new Error("Method not implemented");

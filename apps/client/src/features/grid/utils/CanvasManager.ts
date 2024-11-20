@@ -8,11 +8,11 @@ const zoomMax = 2;
 export class CanvasManager {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  zoom: number;
-  isMouseDown: boolean;
-  skewX: number;
-  skewY: number;
-  layers: Layer[];
+  zoom: number = 1;
+  isMouseDown: boolean = false;
+  skewX: number = 0;
+  skewY: number = 0;
+  layers: Layer[] = [];
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -22,11 +22,6 @@ export class CanvasManager {
 
     this.canvas = canvas;
     this.context = context;
-    this.zoom = 1;
-    this.isMouseDown = false;
-    this.skewX = 0;
-    this.skewY = 0;
-    this.layers = [];
   }
 
   addLayer(layer: Layer) {
@@ -99,7 +94,10 @@ export class CanvasManager {
 
     const { localX, localY } = this.getLocalPosition(e);
     const obj = this.findAtPoint(localX, localY);
-    console.log(obj);
+
+    if (obj) {
+      obj.dispatchEvent("mousedown");
+    }
   }
 
   onMouseUp() {

@@ -1,6 +1,6 @@
 type EventCallback = (data: any) => void;
 
-export class EventTarget {
+export class CanvasEventTarget {
   private listeners: Map<string, Set<EventCallback>> = new Map();
 
   addListener(type: string, callback: EventCallback): void {
@@ -25,7 +25,7 @@ export class EventTarget {
     this.listeners.clear();
   }
 
-  dispatchEvent(type: string, data: any): void {
+  dispatchEvent(type: string, data?: any): void {
     const fns = this.listeners.get(type);
     if (fns) {
       fns.forEach((fn) => fn(data));

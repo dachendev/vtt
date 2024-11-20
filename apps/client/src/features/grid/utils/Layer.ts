@@ -5,6 +5,7 @@ export class Layer {
 
   addObject(object: CanvasObject) {
     this.objects.push(object);
+    object.setup();
   }
 
   draw(context: CanvasRenderingContext2D) {
