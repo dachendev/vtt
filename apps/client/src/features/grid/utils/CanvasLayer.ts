@@ -1,15 +1,11 @@
 import { CanvasObject } from "./CanvasObject";
 
-export class Layer {
+export class CanvasLayer {
   constructor(public name: string, public objects: CanvasObject[] = []) {}
 
-  addObject(object: CanvasObject) {
+  appendObject(object: CanvasObject) {
     this.objects.push(object);
     object.setup();
-  }
-
-  draw(context: CanvasRenderingContext2D) {
-    this.objects.forEach((obj) => obj.draw(context));
   }
 
   findAtPoint(x: number, y: number) {
@@ -19,5 +15,9 @@ export class Layer {
       if (obj.containsPoint(x, y)) return obj;
     }
     return result;
+  }
+
+  draw(context: CanvasRenderingContext2D) {
+    this.objects.forEach((obj) => obj.draw(context));
   }
 }

@@ -1,19 +1,17 @@
-import { CanvasEventTarget } from "./CanvasEventTarget";
+import { PubSub } from "./PubSub";
 
-export class CanvasObject extends CanvasEventTarget {
+export class CanvasObject extends PubSub<Canvas.EventMap> {
   constructor(public x: number, public y: number) {
     super();
   }
 
+  containsPoint(x: number, y: number) {
+    return false;
+  }
+
+  draw(context: CanvasRenderingContext2D) {}
+
   setup() {}
 
   destroy() {}
-
-  draw(context: CanvasRenderingContext2D) {
-    throw new Error("Method not implemented");
-  }
-
-  containsPoint(x: number, y: number): boolean {
-    throw new Error("Method not implemented");
-  }
 }

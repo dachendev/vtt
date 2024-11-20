@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import styles from "./Canvas.module.scss";
 import { CanvasManager } from "../utils/CanvasManager";
 import { Grid } from "../utils/Grid";
-import { Layer } from "../utils/Layer";
+import { CanvasLayer } from "../utils/CanvasLayer";
 import { Token } from "../utils/Token";
 
 interface CanvasProps extends React.ComponentProps<"canvas"> {}
@@ -16,23 +16,23 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const canvas = canvasRef.current;
     const canvasManager = new CanvasManager(canvas);
 
-    const gridLayer = new Layer("grid");
-    canvasManager.addLayer(gridLayer);
+    const gridLayer = new CanvasLayer("grid");
+    canvasManager.appendLayer(gridLayer);
 
-    const objectLayer = new Layer("objects");
-    canvasManager.addLayer(objectLayer);
+    const objectLayer = new CanvasLayer("objects");
+    canvasManager.appendLayer(objectLayer);
 
     const grid = new Grid(0, 0, 500, 500, 50, "#ccc");
 
-    gridLayer.addObject(grid);
+    gridLayer.appendObject(grid);
 
     const token = new Token(0, 0, 50);
-    objectLayer.addObject(token);
+    objectLayer.appendObject(token);
 
-    canvasManager.attachEvents();
+    canvasManager.setup();
     canvasManager.scheduleDraw();
 
-    return () => canvasManager.detachEvents();
+    return () => canvasManager.destroy();
   }, []);
 
   return <canvas ref={canvasRef} className={styles.canvas} {...props} />;

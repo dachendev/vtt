@@ -1,6 +1,6 @@
-import { Rect } from "./Rect";
+import { CanvasRect } from "./CanvasRect";
 
-export class Grid extends Rect {
+export class Grid extends CanvasRect {
   constructor(
     public x: number,
     public y: number,
