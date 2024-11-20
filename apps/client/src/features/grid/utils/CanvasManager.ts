@@ -3,6 +3,7 @@ import { clamp, compareDecimals } from "./mathUtils";
 
 export interface DrawableObject {
   draw: (context: CanvasRenderingContext2D) => void;
+  containsPoint: (x: number, y: number) => boolean;
 }
 
 const zoomStep = 0.1;
@@ -65,25 +66,45 @@ export class CanvasManager {
     requestAnimationFrame(() => this.draw());
   }
 
+  getLocalPosition(e: MouseEvent) {
+    const { left, top } = this.canvas.getBoundingClientRect();
+    return {
+      localX: e.clientX - this.skewX - left,
+      localY: e.clientY - this.skewY - top,
+    };
+  }
+
+  findAtPoint(x: number, y: number) {
+    let result = null;
+    for (let i = this.layers.length - 1; i >= 0; i--) {
+      const layer = this.layers[i];
+      const obj = layer.findAtPoint(x, y);
+      if (obj) return obj;
+    }
+    return result;
+  }
+
   onWheel(e: WheelEvent) {
     const zoomChange = e.deltaY < 0 ? zoomStep : -zoomStep;
     const newZoom = clamp(this.zoom + zoomChange, zoomMin, zoomMax);
     if (compareDecimals(newZoom, this.zoom)) return;
 
-    const { left, top } = this.canvas.getBoundingClientRect();
-    const mouseX = e.clientX - left;
-    const mouseY = e.clientY - top;
+    const { localX, localY } = this.getLocalPosition(e);
     const zoomRatio = newZoom / this.zoom;
 
-    this.skewX += (mouseX - this.skewX) * (1 - zoomRatio);
-    this.skewY += (mouseY - this.skewY) * (1 - zoomRatio);
+    this.skewX += localX * (1 - zoomRatio);
+    this.skewY += localY * (1 - zoomRatio);
     this.zoom = newZoom;
 
     this.scheduleDraw();
   }
 
-  onMouseDown() {
+  onMouseDown(e: MouseEvent) {
     this.isMouseDown = true;
+
+    const { localX, localY } = this.getLocalPosition(e);
+    const obj = this.findAtPoint(localX, localY);
+    console.log(obj);
   }
 
   onMouseUp() {
