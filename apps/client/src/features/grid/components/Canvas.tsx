@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import styles from "./Canvas.module.scss";
 import { CanvasManager } from "../utils/CanvasManager";
-import { Token } from "../utils/Token";
 import { Grid } from "../utils/Grid";
 import { CanvasLayer } from "../utils/CanvasLayer";
+import { CanvasCircle } from "../utils/CanvasCircle";
 
 interface CanvasProps extends React.ComponentProps<"canvas"> {}
 
@@ -22,18 +22,11 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const objectLayer = new CanvasLayer("objects");
     canvasManager.addLayer(objectLayer);
 
-    const grid = new Grid({
-      x: 0,
-      y: 0,
-      width: 500,
-      height: 500,
-      squareSize: 50,
-      strokeStyle: "#ccc",
-    });
+    const grid = new Grid(0, 0, 500, 500, 50, "#ccc");
 
     gridLayer.addObject(grid);
 
-    const token = new Token(0, 0, 100);
+    const token = new CanvasCircle(0, 0, 50);
     objectLayer.addObject(token);
 
     canvasManager.attachEvents();

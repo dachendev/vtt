@@ -1,6 +1,10 @@
 import { CanvasLayer } from "./CanvasLayer";
 import { clamp, compareDecimals } from "./mathUtils";
 
+export interface DrawableObject {
+  draw: (context: CanvasRenderingContext2D) => void;
+}
+
 const zoomStep = 0.1;
 const zoomMin = 0.5;
 const zoomMax = 2;

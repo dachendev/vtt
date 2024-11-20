@@ -1,29 +1,15 @@
-import { CanvasObject } from "./CanvasObject";
+import { CanvasRect } from "./CanvasRect";
 
-interface GridOptions {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  squareSize: number;
-  strokeStyle?: string;
-}
-
-export class Grid extends CanvasObject {
-  squareSize: number;
-  strokeStyle: string;
-
-  constructor({
-    x,
-    y,
-    width,
-    height,
-    squareSize,
-    strokeStyle = "#000",
-  }: GridOptions) {
+export class Grid extends CanvasRect {
+  constructor(
+    public x: number,
+    public y: number,
+    public width: number,
+    public height: number,
+    public squareSize: number,
+    public strokeStyle: string = "#000"
+  ) {
     super(x, y, width, height);
-    this.squareSize = squareSize;
-    this.strokeStyle = strokeStyle;
   }
 
   draw(context: CanvasRenderingContext2D) {
