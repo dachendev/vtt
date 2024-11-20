@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import styles from "./Canvas.module.scss";
 import { CanvasManager } from "../utils/CanvasManager";
-import { Grid } from "../utils/Grid";
+import { CanvasGrid } from "../utils/CanvasGrid";
 import { CanvasLayer } from "../utils/CanvasLayer";
-import { Token } from "../utils/Token";
+import { CanvasToken } from "../utils/CanvasToken";
 
 interface CanvasProps extends React.ComponentProps<"canvas"> {}
 
@@ -17,22 +17,25 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const canvasManager = new CanvasManager(canvas);
 
     const gridLayer = new CanvasLayer("grid");
-    canvasManager.appendLayer(gridLayer);
+    canvasManager.addLayer(gridLayer);
 
     const objectLayer = new CanvasLayer("objects");
-    canvasManager.appendLayer(objectLayer);
+    canvasManager.addLayer(objectLayer);
 
-    const grid = new Grid(0, 0, 500, 500, 50, "#ccc");
+    const grid = new CanvasGrid(50, "#ccc");
 
-    gridLayer.appendObject(grid);
+    gridLayer.add(grid);
 
-    const token = new Token(0, 0, 50);
-    objectLayer.appendObject(token);
+    const token = new CanvasToken(0, 0, 50);
+    objectLayer.add(token);
 
     canvasManager.setup();
-    canvasManager.scheduleDraw();
+    canvasManager.scheduleFrame(true);
 
-    return () => canvasManager.destroy();
+    return () => {
+      canvasManager.cancelFrame();
+      canvasManager.destroy();
+    };
   }, []);
 
   return <canvas ref={canvasRef} className={styles.canvas} {...props} />;

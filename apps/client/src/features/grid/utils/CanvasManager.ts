@@ -1,6 +1,7 @@
 import { EventManager } from "./EventManager";
 import { CanvasLayer } from "./CanvasLayer";
 import { clamp, compareDecimals } from "./mathUtils";
+import { CanvasEventType } from "./CanvasObject";
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
@@ -10,11 +11,14 @@ export class CanvasManager {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   zoom = 1;
-  isMouseDown = false;
+  isDragging = false;
   skewX = 0;
   skewY = 0;
-  layers: CanvasLayer[] = [];
+  layers = new Map<string, CanvasLayer>();
+  layerOrder: string[] = [];
   eventManager: EventManager;
+  needsRedraw = true;
+  frameId: number | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -27,33 +31,26 @@ export class CanvasManager {
     this.eventManager = new EventManager(canvas);
   }
 
-  appendLayer(layer: CanvasLayer) {
-    this.layers.push(layer);
+  addLayer(layer: CanvasLayer) {
+    this.layers.set(layer.id, layer);
+    this.layerOrder.push(layer.id);
   }
 
-  getMousePosition(event: MouseEvent) {
-    const rect = this.canvas.getBoundingClientRect();
-    const canvasX = event.clientX - rect.left;
-    const canvasY = event.clientY - rect.top;
-
-    return {
-      canvasX,
-      canvasY,
-      localX: (canvasX - this.skewX) / this.zoom,
-      localY: (canvasY - this.skewY) / this.zoom,
-    };
+  findObjectById(id: string) {
+    for (const layer of this.layers.values()) {
+      const obj = layer.findById(id);
+      if (obj) return obj;
+    }
+    return null;
   }
 
   findAtPoint(x: number, y: number) {
-    let result = null;
-
-    for (let i = this.layers.length - 1; i >= 0; i--) {
-      const layer = this.layers[i];
+    for (let i = this.layerOrder.length - 1; i >= 0; i--) {
+      const layer = this.layers.get(this.layerOrder[i])!;
       const obj = layer.findAtPoint(x, y);
       if (obj) return obj;
     }
-
-    return result;
+    return null;
   }
 
   clear() {
@@ -75,12 +72,63 @@ export class CanvasManager {
   }
 
   draw() {
+    if (!this.needsRedraw) return;
+
     this.clear();
-    this.layers.forEach((layer) => layer.draw(this.context));
+
+    for (const id of this.layerOrder) {
+      const layer = this.layers.get(id);
+      if (layer) {
+        layer.draw(this.context);
+      }
+    }
+
+    this.needsRedraw = false;
   }
 
-  scheduleDraw() {
-    requestAnimationFrame(() => this.draw());
+  scheduleFrame(repeat = false) {
+    this.frameId = requestAnimationFrame(() => {
+      this.draw();
+      if (repeat) this.scheduleFrame(repeat);
+    });
+  }
+
+  cancelFrame() {
+    if (this.frameId) {
+      cancelAnimationFrame(this.frameId);
+      this.frameId = null;
+    }
+  }
+
+  getMousePosition(event: MouseEvent) {
+    const rect = this.canvas.getBoundingClientRect();
+    const canvasX = event.clientX - rect.left;
+    const canvasY = event.clientY - rect.top;
+
+    return {
+      canvasX,
+      canvasY,
+      localX: (canvasX - this.skewX) / this.zoom,
+      localY: (canvasY - this.skewY) / this.zoom,
+    };
+  }
+
+  forwardMouseEvent(type: CanvasEventType, event: MouseEvent) {
+    const canvasManager = this;
+
+    const { localX, localY } = canvasManager.getMousePosition(event);
+    const obj = canvasManager.findAtPoint(localX, localY);
+
+    if (!obj) return;
+
+    obj.publish(type, {
+      canvasManager,
+      domEvent: event,
+      x: localX,
+      y: localY,
+      movementX: event.movementX / this.zoom,
+      movementY: event.movementY / this.zoom,
+    });
   }
 
   onWheel(event: WheelEvent) {
@@ -96,59 +144,59 @@ export class CanvasManager {
     this.zoom = newZoom;
 
     this.applyTransform();
-    this.scheduleDraw();
+    this.needsRedraw = true;
   }
 
-  onMouseDown() {
-    this.isMouseDown = true;
+  onMouseDown(event: MouseEvent) {
+    if (event.button === 1) {
+      this.isDragging = true;
+    }
   }
 
-  onMouseUp() {
-    this.isMouseDown = false;
+  onMouseUp(event: MouseEvent) {
+    if (event.button === 1) {
+      this.isDragging = false;
+    }
   }
 
   onMouseMove(event: MouseEvent) {
-    if (!this.isMouseDown) return;
+    if (!this.isDragging) return;
 
-    const { movementX, movementY } = event;
-    this.skewX += movementX;
-    this.skewY += movementY;
+    this.skewX += event.movementX;
+    this.skewY += event.movementY;
 
     this.applyTransform();
-    this.scheduleDraw();
+    this.needsRedraw = true;
   }
 
-  onMouseOut() {
-    this.isMouseDown = false;
-  }
-
-  forwardMouseEvent(type: Canvas.MouseEventType) {
-    return (event: MouseEvent) => {
-      const { localX, localY } = this.getMousePosition(event);
-      const obj = this.findAtPoint(localX, localY);
-
-      if (obj) {
-        obj.publish(type, {
-          domEvent: event,
-          x: localX,
-          y: localY,
-        });
-      }
-    };
+  onMouseLeave() {
+    this.isDragging = false;
   }
 
   setup() {
-    this.eventManager.on("mousedown", this.forwardMouseEvent("mousedown"));
+    // add event listeners
     this.eventManager.on("wheel", this.onWheel.bind(this));
     this.eventManager.on("mousedown", this.onMouseDown.bind(this));
-    this.eventManager.on("mouseout", this.onMouseOut.bind(this));
+    this.eventManager.on("mouseup", this.onMouseUp.bind(this));
+    this.eventManager.on("mousemove", this.onMouseMove.bind(this));
+    this.eventManager.on("mouseleave", this.onMouseLeave.bind(this));
     window.addEventListener("mouseup", this.onMouseUp.bind(this));
-    window.addEventListener("mousemove", this.onMouseMove.bind(this));
+
+    // forward events
+    const forwardMouseEvents: CanvasEventType[] = [
+      "mousedown",
+      "mouseup",
+      "mousemove",
+      "mouseleave",
+    ];
+
+    for (const type of forwardMouseEvents) {
+      this.eventManager.on(type, this.forwardMouseEvent.bind(this, type));
+    }
   }
 
   destroy() {
     this.eventManager.removeAllListeners();
     window.removeEventListener("mouseup", this.onMouseUp.bind(this));
-    window.removeEventListener("mousemove", this.onMouseMove.bind(this));
   }
 }

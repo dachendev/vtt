@@ -1,23 +1,35 @@
 import { CanvasObject } from "./CanvasObject";
+import { v4 as uuid } from "uuid";
 
 export class CanvasLayer {
-  constructor(public name: string, public objects: CanvasObject[] = []) {}
+  id = uuid();
+  objects = new Map<string, CanvasObject>();
+  objectOrder: string[] = [];
 
-  appendObject(object: CanvasObject) {
-    this.objects.push(object);
+  constructor(public name: string) {}
+
+  add(object: CanvasObject) {
+    this.objects.set(object.id, object);
+    this.objectOrder.push(object.id);
     object.setup();
   }
 
+  findById(id: string) {
+    return this.objects.get(id) || null;
+  }
+
   findAtPoint(x: number, y: number) {
-    let result = null;
-    for (let i = this.objects.length - 1; i >= 0; i--) {
-      const obj = this.objects[i];
+    for (let i = this.objectOrder.length - 1; i >= 0; i--) {
+      const obj = this.objects.get(this.objectOrder[i])!;
       if (obj.containsPoint(x, y)) return obj;
     }
-    return result;
+    return null;
   }
 
   draw(context: CanvasRenderingContext2D) {
-    this.objects.forEach((obj) => obj.draw(context));
+    for (const id of this.objectOrder) {
+      const obj = this.objects.get(id);
+      if (obj) obj.draw(context);
+    }
   }
 }
