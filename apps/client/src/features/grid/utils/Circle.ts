@@ -1,8 +1,10 @@
-import { DrawableObject } from "./CanvasManager";
+import { CanvasObject } from "./CanvasObject";
 import { findHypotenuse } from "./mathUtils";
 
-export class CanvasCircle implements DrawableObject {
-  constructor(public x: number, public y: number, public radius: number) {}
+export class Circle extends CanvasObject {
+  constructor(public x: number, public y: number, public radius: number) {
+    super(x, y);
+  }
 
   getCenterPoint() {
     return {

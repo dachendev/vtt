@@ -1,15 +1,9 @@
-import { DrawableObject } from "./CanvasManager";
+import { CanvasObject } from "./CanvasObject";
 
-export class CanvasLayer {
-  name: string;
-  objects: DrawableObject[];
+export class Layer {
+  constructor(public name: string, public objects: CanvasObject[] = []) {}
 
-  constructor(name: string) {
-    this.name = name;
-    this.objects = [];
-  }
-
-  addObject(object: DrawableObject) {
+  addObject(object: CanvasObject) {
     this.objects.push(object);
   }
 

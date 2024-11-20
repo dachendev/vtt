@@ -1,12 +1,14 @@
-import { DrawableObject } from "./CanvasManager";
+import { CanvasObject } from "./CanvasObject";
 
-export class CanvasRect implements DrawableObject {
+export class Rect extends CanvasObject {
   constructor(
     public x: number,
     public y: number,
     public width: number,
     public height: number
-  ) {}
+  ) {
+    super(x, y);
+  }
 
   draw(context: CanvasRenderingContext2D) {
     context.fillRect(this.x, this.y, this.width, this.height);

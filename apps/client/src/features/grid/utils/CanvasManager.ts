@@ -1,10 +1,5 @@
-import { CanvasLayer } from "./CanvasLayer";
+import { Layer } from "./Layer";
 import { clamp, compareDecimals } from "./mathUtils";
-
-export interface DrawableObject {
-  draw: (context: CanvasRenderingContext2D) => void;
-  containsPoint: (x: number, y: number) => boolean;
-}
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
@@ -17,7 +12,7 @@ export class CanvasManager {
   isMouseDown: boolean;
   skewX: number;
   skewY: number;
-  layers: CanvasLayer[];
+  layers: Layer[];
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -34,7 +29,7 @@ export class CanvasManager {
     this.layers = [];
   }
 
-  addLayer(layer: CanvasLayer) {
+  addLayer(layer: Layer) {
     this.layers.push(layer);
   }
 
