@@ -36,6 +36,7 @@ export class Grid extends CanvasRect {
       context.lineTo(this.x + this.width, y);
     }
 
+    context.closePath();
     context.stroke();
   }
 }

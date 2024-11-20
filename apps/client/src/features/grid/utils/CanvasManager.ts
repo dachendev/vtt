@@ -31,11 +31,16 @@ export class CanvasManager {
     this.layers.push(layer);
   }
 
-  getLocalPosition(event: MouseEvent) {
-    const { left, top } = this.canvas.getBoundingClientRect();
+  getMousePosition(event: MouseEvent) {
+    const rect = this.canvas.getBoundingClientRect();
+    const canvasX = event.clientX - rect.left;
+    const canvasY = event.clientY - rect.top;
+
     return {
-      localX: event.clientX - left - this.skewX,
-      localY: event.clientY - top - this.skewY,
+      canvasX,
+      canvasY,
+      localX: (canvasX - this.skewX) / this.zoom,
+      localY: (canvasY - this.skewY) / this.zoom,
     };
   }
 
@@ -83,11 +88,11 @@ export class CanvasManager {
     const newZoom = clamp(this.zoom + zoomChange, zoomMin, zoomMax);
     if (compareDecimals(newZoom, this.zoom)) return;
 
-    const { localX, localY } = this.getLocalPosition(event);
+    const { canvasX, canvasY } = this.getMousePosition(event);
     const zoomRatio = newZoom / this.zoom;
 
-    this.skewX += localX * (1 - zoomRatio);
-    this.skewY += localY * (1 - zoomRatio);
+    this.skewX += (canvasX - this.skewX) * (1 - zoomRatio);
+    this.skewY += (canvasY - this.skewY) * (1 - zoomRatio);
     this.zoom = newZoom;
 
     this.applyTransform();
@@ -119,7 +124,7 @@ export class CanvasManager {
 
   forwardMouseEvent(type: Canvas.MouseEventType) {
     return (event: MouseEvent) => {
-      const { localX, localY } = this.getLocalPosition(event);
+      const { localX, localY } = this.getMousePosition(event);
       const obj = this.findAtPoint(localX, localY);
 
       if (obj) {

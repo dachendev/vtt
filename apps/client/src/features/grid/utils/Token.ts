@@ -6,12 +6,12 @@ export class Token extends CanvasCircle {
     const centerY = this.y + this.radius;
     context.beginPath();
     context.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
-    context.fill();
     context.closePath();
+    context.fill();
   }
 
   onMouseDown(event: Canvas.MouseEvent) {
-    console.log(event.x, event.y);
+    console.log("mousedown");
   }
 
   setup() {
