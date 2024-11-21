@@ -6,6 +6,7 @@ export class CanvasMoveable extends CanvasObject {
 
   constructor(type: string, public x: number, public y: number) {
     super(type);
+    this.setup();
   }
 
   setup() {
@@ -33,7 +34,7 @@ export class CanvasMoveable extends CanvasObject {
     this.x += event.movementX;
     this.y += event.movementY;
 
-    event.canvasManager.isDirty = true;
+    event.canvasManager.needsRedraw = true;
   }
 
   onMouseOut() {

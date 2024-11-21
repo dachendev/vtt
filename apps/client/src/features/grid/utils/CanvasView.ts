@@ -48,7 +48,7 @@ export class CanvasView {
   draw(context: CanvasRenderingContext2D) {
     this.layerOrder.forEach((id) => {
       const layer = this.layers.get(id);
-      layer!.draw(context, this);
+      layer!.draw(context);
     });
   }
 }

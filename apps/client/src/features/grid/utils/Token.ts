@@ -2,7 +2,7 @@ import { findHypotenuse } from "./mathUtils";
 import { CanvasMoveable } from "./CanvasMoveable";
 import { CanvasMouseEvent } from "./CanvasManager";
 
-export class CanvasToken extends CanvasMoveable {
+export class Token extends CanvasMoveable {
   constructor(x: number, y: number, public radius: number) {
     super("token", x, y);
   }
@@ -16,7 +16,7 @@ export class CanvasToken extends CanvasMoveable {
   }
 
   snapToGrid() {
-    const gridSize = 100;
+    const gridSize = 50;
     this.x = Math.round(this.x / gridSize) * gridSize;
     this.y = Math.round(this.y / gridSize) * gridSize;
   }
@@ -34,7 +34,7 @@ export class CanvasToken extends CanvasMoveable {
     if (event.originalEvent.button === 0) {
       this.isDragging = false;
       this.snapToGrid();
-      event.canvasManager.isDirty = true;
+      event.canvasManager.needsRedraw = true;
     }
   }
 }

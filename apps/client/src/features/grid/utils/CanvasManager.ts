@@ -17,7 +17,10 @@ export interface CanvasMouseEvent extends CanvasEvent<MouseEvent> {
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
-const zoomMax = 1.5;
+const zoomMax = 2;
+
+const fps = 60;
+const drawInterval = 1000 / fps;
 
 export class CanvasManager {
   canvas: HTMLCanvasElement;
@@ -30,7 +33,8 @@ export class CanvasManager {
   windowEventManager = new EventManager<Window, WindowEventMap>(window);
   frameId: number | null = null;
   activeView: CanvasView | null = null;
-  isDirty = true;
+  needsRedraw = true;
+  lastDraw = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -76,16 +80,21 @@ export class CanvasManager {
   }
 
   draw() {
-    if (!this.isDirty) return;
+    if (!this.needsRedraw) return;
 
-    this.clear();
-    this.applyTransform();
+    const now = performance.now();
 
-    if (this.activeView) {
-      this.activeView.draw(this.context);
+    if (now - this.lastDraw >= drawInterval) {
+      this.clear();
+      this.applyTransform();
+
+      if (this.activeView) {
+        this.activeView.draw(this.context);
+      }
+
+      this.lastDraw = now;
+      this.needsRedraw = false;
     }
-
-    this.isDirty = false;
   }
 
   scheduleFrame(repeat = false) {
@@ -143,7 +152,7 @@ export class CanvasManager {
     this.skewY += (mouseY - this.skewY) * (1 - zoomRatio);
     this.zoom = newZoom;
 
-    this.isDirty = true;
+    this.needsRedraw = true;
   }
 
   onMouseDown(event: MouseEvent) {
@@ -164,7 +173,7 @@ export class CanvasManager {
     this.skewX += event.movementX;
     this.skewY += event.movementY;
 
-    this.isDirty = true;
+    this.needsRedraw = true;
   }
 
   onMouseOut() {

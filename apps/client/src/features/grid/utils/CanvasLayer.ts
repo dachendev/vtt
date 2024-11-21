@@ -1,7 +1,5 @@
-import { CanvasManager } from "./CanvasManager";
 import { CanvasObject } from "./CanvasObject";
 import { v4 as uuid } from "uuid";
-import { CanvasView } from "./CanvasView";
 
 export class CanvasLayer {
   id = uuid();
@@ -27,10 +25,10 @@ export class CanvasLayer {
     return null;
   }
 
-  draw(context: CanvasRenderingContext2D, view: CanvasView) {
+  draw(context: CanvasRenderingContext2D) {
     for (const id of this.objectOrder) {
       const obj = this.objects.get(id);
-      if (obj) obj.draw(context, view);
+      if (obj) obj.draw(context);
     }
   }
 }
