@@ -17,7 +17,7 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     const canvas = canvasRef.current;
     const canvasManager = new CanvasManager(canvas);
 
-    const view = new CanvasView(500, 500);
+    const view = new CanvasView(1000, 1000);
     canvasManager.activeView = view;
 
     const backgroundLayer = new CanvasLayer("background");
@@ -25,17 +25,28 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
     view.addLayer(backgroundLayer);
     view.addLayer(objectLayer);
 
-    const grid = new CanvasGrid(50, "#ccc");
+    const grid = new CanvasGrid(100, "#ccc");
     backgroundLayer.add(grid);
 
-    const token = new CanvasToken(0, 0, 25);
+    const token = new CanvasToken(0, 0, 50);
     objectLayer.add(token);
 
     canvasManager.scheduleFrame(true);
 
+    const fitCanvasToWindow = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvasManager.isDirty = true;
+    };
+
+    fitCanvasToWindow();
+
+    window.addEventListener("resize", fitCanvasToWindow);
+
     return () => {
       canvasManager.destroy();
       canvasManager.cancelFrame();
+      window.removeEventListener("resize", fitCanvasToWindow);
     };
   }, []);
 

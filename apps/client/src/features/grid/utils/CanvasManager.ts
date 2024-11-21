@@ -17,7 +17,7 @@ export interface CanvasMouseEvent extends CanvasEvent<MouseEvent> {
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
-const zoomMax = 2;
+const zoomMax = 1.5;
 
 export class CanvasManager {
   canvas: HTMLCanvasElement;
@@ -49,21 +49,19 @@ export class CanvasManager {
     this.canvasEventManager.on("wheel", this.onWheel.bind(this));
     this.canvasEventManager.on("mousedown", this.onMouseDown.bind(this));
     this.canvasEventManager.on("mousemove", this.onMouseMove.bind(this));
-    this.canvasEventManager.on("mouseleave", this.onMouseLeave.bind(this));
+    this.canvasEventManager.on("mouseout", this.onMouseOut.bind(this));
     this.windowEventManager.on("mouseup", this.onMouseUp.bind(this));
 
     // forward events
     this.canvasEventManager.on("mousedown", this.onMouseEvent.bind(this));
     this.canvasEventManager.on("mousemove", this.onMouseEvent.bind(this));
-    this.canvasEventManager.on("mouseleave", this.onMouseEvent.bind(this));
+    this.canvasEventManager.on("mouseout", this.onMouseEvent.bind(this));
     this.windowEventManager.on("mouseup", this.onMouseEvent.bind(this));
   }
 
   clear() {
-    this.context.save();
     this.context.resetTransform();
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.restore();
   }
 
   applyTransform() {
@@ -81,6 +79,7 @@ export class CanvasManager {
     if (!this.isDirty) return;
 
     this.clear();
+    this.applyTransform();
 
     if (this.activeView) {
       this.activeView.draw(this.context);
@@ -144,7 +143,6 @@ export class CanvasManager {
     this.skewY += (mouseY - this.skewY) * (1 - zoomRatio);
     this.zoom = newZoom;
 
-    this.applyTransform();
     this.isDirty = true;
   }
 
@@ -166,11 +164,10 @@ export class CanvasManager {
     this.skewX += event.movementX;
     this.skewY += event.movementY;
 
-    this.applyTransform();
     this.isDirty = true;
   }
 
-  onMouseLeave() {
+  onMouseOut() {
     this.isDragging = false;
   }
 

@@ -1,3 +1,4 @@
+import { CanvasView } from "./CanvasView";
 import { PubSub } from "./PubSub";
 import { v4 as uuid } from "uuid";
 
@@ -15,5 +16,5 @@ export class CanvasObject extends PubSub<any> {
     return false;
   }
 
-  draw(context: CanvasRenderingContext2D) {}
+  draw(context: CanvasRenderingContext2D, view: CanvasView) {}
 }

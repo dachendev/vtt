@@ -1,5 +1,6 @@
 import { findHypotenuse } from "./mathUtils";
 import { CanvasMoveable } from "./CanvasMoveable";
+import { CanvasMouseEvent } from "./CanvasManager";
 
 export class CanvasToken extends CanvasMoveable {
   constructor(x: number, y: number, public radius: number) {
@@ -14,6 +15,12 @@ export class CanvasToken extends CanvasMoveable {
     return distanceToCenter <= this.radius;
   }
 
+  snapToGrid() {
+    const gridSize = 100;
+    this.x = Math.round(this.x / gridSize) * gridSize;
+    this.y = Math.round(this.y / gridSize) * gridSize;
+  }
+
   draw(context: CanvasRenderingContext2D) {
     const centerX = this.x + this.radius;
     const centerY = this.y + this.radius;
@@ -21,5 +28,13 @@ export class CanvasToken extends CanvasMoveable {
     context.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
     context.closePath();
     context.fill();
+  }
+
+  onMouseUp(event: CanvasMouseEvent) {
+    if (event.originalEvent.button === 0) {
+      this.isDragging = false;
+      this.snapToGrid();
+      event.canvasManager.isDirty = true;
+    }
   }
 }
