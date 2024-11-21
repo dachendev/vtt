@@ -21,22 +21,19 @@ export interface CanvasEventMap {
   mouseleave: CanvasMouseEvent;
 }
 
-export type CanvasEventType = keyof CanvasEventMap;
-
 export class CanvasObject extends PubSub<CanvasEventMap> {
   id = uuid();
 
   constructor(public type: string) {
     super();
+    this.setup();
   }
+
+  setup() {}
 
   containsPoint(x: number, y: number) {
     return false;
   }
 
   draw(context: CanvasRenderingContext2D) {}
-
-  setup() {}
-
-  destroy() {}
 }

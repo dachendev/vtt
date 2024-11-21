@@ -13,30 +13,26 @@ export const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const canvas = canvasRef.current;
-    const canvasManager = new CanvasManager(canvas);
+    const canvasManager = new CanvasManager(canvasRef.current);
 
-    const gridLayer = new CanvasLayer("grid");
-    canvasManager.addLayer(gridLayer);
-
-    const objectLayer = new CanvasLayer("objects");
-    canvasManager.addLayer(objectLayer);
+    const layer1 = new CanvasLayer("Layer 1");
+    const layer2 = new CanvasLayer("Layer 2");
+    canvasManager.addLayer(layer1);
+    canvasManager.addLayer(layer2);
 
     const grid = new CanvasGrid(50, "#ccc");
-
-    gridLayer.add(grid);
+    layer1.add(grid);
 
     const token = new CanvasToken(0, 0, 50);
-    objectLayer.add(token);
+    layer2.add(token);
 
-    canvasManager.setup();
     canvasManager.scheduleFrame(true);
 
     return () => {
-      canvasManager.cancelFrame();
       canvasManager.destroy();
+      canvasManager.cancelFrame();
     };
-  }, []);
+  });
 
   return <canvas ref={canvasRef} className={styles.canvas} {...props} />;
 };

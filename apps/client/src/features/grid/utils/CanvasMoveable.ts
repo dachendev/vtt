@@ -7,6 +7,13 @@ export class CanvasMoveable extends CanvasObject {
     super(type);
   }
 
+  setup() {
+    this.subscribe("mousedown", this.onMouseDown.bind(this));
+    this.subscribe("mousemove", this.onMouseMove.bind(this));
+    this.subscribe("mouseleave", this.onMouseLeave.bind(this));
+    this.subscribe("mouseup", this.onMouseUp.bind(this));
+  }
+
   onMouseDown(event: CanvasMouseEvent) {
     if (event.domEvent.button === 0) {
       this.isDragging = true;
@@ -25,21 +32,10 @@ export class CanvasMoveable extends CanvasObject {
     this.x += event.movementX;
     this.y += event.movementY;
 
-    event.canvasManager.needsRedraw = true;
+    event.canvasManager.scheduleRedraw();
   }
 
   onMouseLeave() {
     this.isDragging = false;
-  }
-
-  setup() {
-    this.subscribe("mousedown", this.onMouseDown.bind(this));
-    this.subscribe("mouseup", this.onMouseUp.bind(this));
-    this.subscribe("mousemove", this.onMouseMove.bind(this));
-    this.subscribe("mouseleave", this.onMouseLeave.bind(this));
-  }
-
-  destroy() {
-    this.unsubscribeAll();
   }
 }

@@ -11,7 +11,6 @@ export class CanvasLayer {
   add(object: CanvasObject) {
     this.objects.set(object.id, object);
     this.objectOrder.push(object.id);
-    object.setup();
   }
 
   findById(id: string) {
