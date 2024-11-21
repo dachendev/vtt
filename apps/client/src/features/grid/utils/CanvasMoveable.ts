@@ -1,4 +1,5 @@
-import { CanvasMouseEvent, CanvasObject } from "./CanvasObject";
+import { CanvasMouseEvent } from "./CanvasManager";
+import { CanvasObject } from "./CanvasObject";
 
 export class CanvasMoveable extends CanvasObject {
   isDragging = false;
@@ -9,20 +10,27 @@ export class CanvasMoveable extends CanvasObject {
 
   setup() {
     this.subscribe("mousedown", this.onMouseDown.bind(this));
+    this.subscribe("mouseup", this.onMouseUp.bind(this));
     this.subscribe("mousemove", this.onMouseMove.bind(this));
     this.subscribe("mouseleave", this.onMouseLeave.bind(this));
-    this.subscribe("mouseup", this.onMouseUp.bind(this));
   }
 
   onMouseDown(event: CanvasMouseEvent) {
-    if (event.domEvent.button === 0) {
+    if (event.originalEvent.button === 0) {
       this.isDragging = true;
     }
   }
 
   onMouseUp(event: CanvasMouseEvent) {
-    if (event.domEvent.button === 0) {
+    if (event.originalEvent.button === 0) {
       this.isDragging = false;
+
+      // snap to grid
+      const gridCellSize = 50;
+      this.x = Math.round(this.x / gridCellSize) * gridCellSize;
+      this.y = Math.round(this.y / gridCellSize) * gridCellSize;
+
+      event.canvasManager.isDirty = true;
     }
   }
 
@@ -32,7 +40,7 @@ export class CanvasMoveable extends CanvasObject {
     this.x += event.movementX;
     this.y += event.movementY;
 
-    event.canvasManager.scheduleRedraw();
+    event.canvasManager.isDirty = true;
   }
 
   onMouseLeave() {

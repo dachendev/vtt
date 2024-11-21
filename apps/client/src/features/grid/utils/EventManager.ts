@@ -1,6 +1,6 @@
 export class EventManager<
   T extends EventTarget,
-  M extends GlobalEventHandlersEventMap = GlobalEventHandlersEventMap
+  M extends Record<string, any>
 > {
   listeners: Map<keyof M, Set<(event: any) => void>> = new Map();
 

@@ -1,27 +1,7 @@
-import { CanvasManager } from "./CanvasManager";
 import { PubSub } from "./PubSub";
 import { v4 as uuid } from "uuid";
 
-export interface CanvasEvent<T extends Event> {
-  canvasManager: CanvasManager;
-  domEvent: T;
-}
-
-export interface CanvasMouseEvent extends CanvasEvent<MouseEvent> {
-  x: number;
-  y: number;
-  movementX: number;
-  movementY: number;
-}
-
-export interface CanvasEventMap {
-  mousedown: CanvasMouseEvent;
-  mouseup: CanvasMouseEvent;
-  mousemove: CanvasMouseEvent;
-  mouseleave: CanvasMouseEvent;
-}
-
-export class CanvasObject extends PubSub<CanvasEventMap> {
+export class CanvasObject extends PubSub<any> {
   id = uuid();
 
   constructor(public type: string) {
@@ -31,7 +11,7 @@ export class CanvasObject extends PubSub<CanvasEventMap> {
 
   setup() {}
 
-  containsPoint(x: number, y: number) {
+  inBounds(x: number, y: number) {
     return false;
   }
 

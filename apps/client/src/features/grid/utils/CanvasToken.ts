@@ -6,7 +6,7 @@ export class CanvasToken extends CanvasMoveable {
     super("token", x, y);
   }
 
-  containsPoint(x: number, y: number) {
+  inBounds(x: number, y: number) {
     const centerX = this.x + this.radius;
     const centerY = this.y + this.radius;
     const distanceToCenter = findHypotenuse(x - centerX, y - centerY);

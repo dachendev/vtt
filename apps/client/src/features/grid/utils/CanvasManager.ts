@@ -1,7 +1,19 @@
 import { EventManager } from "./EventManager";
-import { CanvasLayer } from "./CanvasLayer";
 import { clamp, compareDecimals } from "./mathUtils";
-import { CanvasEventMap } from "./CanvasObject";
+import { CanvasView } from "./CanvasView";
+
+export interface CanvasEvent<T extends Event> {
+  originalEvent: T;
+  canvasManager: CanvasManager;
+  type: string;
+}
+
+export interface CanvasMouseEvent extends CanvasEvent<MouseEvent> {
+  x: number;
+  y: number;
+  movementX: number;
+  movementY: number;
+}
 
 const zoomStep = 0.1;
 const zoomMin = 0.5;
@@ -14,12 +26,11 @@ export class CanvasManager {
   isDragging = false;
   skewX = 0;
   skewY = 0;
-  layers = new Map<string, CanvasLayer>();
-  layerOrder: string[] = [];
-  windowEventManager = new EventManager<Window>(window);
-  canvasEventManager: EventManager<HTMLCanvasElement>;
-  needsRedraw = true;
+  canvasEventManager: EventManager<HTMLCanvasElement, HTMLElementEventMap>;
+  windowEventManager = new EventManager<Window, WindowEventMap>(window);
   frameId: number | null = null;
+  activeView: CanvasView | null = null;
+  isDirty = true;
 
   constructor(canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
@@ -30,6 +41,7 @@ export class CanvasManager {
     this.canvas = canvas;
     this.context = context;
     this.canvasEventManager = new EventManager(canvas);
+
     this.setup();
   }
 
@@ -38,53 +50,20 @@ export class CanvasManager {
     this.canvasEventManager.on("mousedown", this.onMouseDown.bind(this));
     this.canvasEventManager.on("mousemove", this.onMouseMove.bind(this));
     this.canvasEventManager.on("mouseleave", this.onMouseLeave.bind(this));
-
     this.windowEventManager.on("mouseup", this.onMouseUp.bind(this));
 
-    this.canvasEventManager.on(
-      "mousedown",
-      this.publishMouseEvent.bind(this, "mousedown")
-    );
-    this.canvasEventManager.on(
-      "mousemove",
-      this.publishMouseEvent.bind(this, "mousemove")
-    );
-    this.canvasEventManager.on(
-      "mouseleave",
-      this.publishMouseEvent.bind(this, "mouseleave")
-    );
-
-    this.windowEventManager.on(
-      "mouseup",
-      this.publishMouseEvent.bind(this, "mouseup")
-    );
-  }
-
-  addLayer(layer: CanvasLayer) {
-    this.layers.set(layer.id, layer);
-    this.layerOrder.push(layer.id);
-  }
-
-  findObjectById(id: string) {
-    for (const layer of this.layers.values()) {
-      const obj = layer.findById(id);
-      if (obj) return obj;
-    }
-    return null;
-  }
-
-  findAtPoint(x: number, y: number) {
-    for (let i = this.layerOrder.length - 1; i >= 0; i--) {
-      const layer = this.layers.get(this.layerOrder[i])!;
-      const obj = layer.findAtPoint(x, y);
-      if (obj) return obj;
-    }
-    return null;
+    // forward events
+    this.canvasEventManager.on("mousedown", this.onMouseEvent.bind(this));
+    this.canvasEventManager.on("mousemove", this.onMouseEvent.bind(this));
+    this.canvasEventManager.on("mouseleave", this.onMouseEvent.bind(this));
+    this.windowEventManager.on("mouseup", this.onMouseEvent.bind(this));
   }
 
   clear() {
+    this.context.save();
     this.context.resetTransform();
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.restore();
   }
 
   applyTransform() {
@@ -99,23 +78,15 @@ export class CanvasManager {
   }
 
   draw() {
-    if (!this.needsRedraw) return;
+    if (!this.isDirty) return;
 
     this.clear();
-    this.applyTransform();
 
-    for (const id of this.layerOrder) {
-      const layer = this.layers.get(id);
-      if (layer) {
-        layer.draw(this.context);
-      }
+    if (this.activeView) {
+      this.activeView.draw(this.context);
     }
 
-    this.needsRedraw = false;
-  }
-
-  scheduleRedraw() {
-    this.needsRedraw = true;
+    this.isDirty = false;
   }
 
   scheduleFrame(repeat = false) {
@@ -132,33 +103,30 @@ export class CanvasManager {
     }
   }
 
-  getMousePosition(event: MouseEvent) {
-    const rect = this.canvas.getBoundingClientRect();
-    const canvasX = event.clientX - rect.left;
-    const canvasY = event.clientY - rect.top;
-
+  getLocalPosition(event: MouseEvent) {
+    const { left, top } = this.canvas.getBoundingClientRect();
     return {
-      canvasX,
-      canvasY,
-      localX: (canvasX - this.skewX) / this.zoom,
-      localY: (canvasY - this.skewY) / this.zoom,
+      localX: (event.clientX - left - this.skewX) / this.zoom,
+      localY: (event.clientY - top - this.skewY) / this.zoom,
     };
   }
 
-  publishMouseEvent(type: keyof CanvasEventMap, event: MouseEvent) {
-    const { localX, localY } = this.getMousePosition(event);
-    const obj = this.findAtPoint(localX, localY);
+  onMouseEvent(event: MouseEvent) {
+    if (!this.activeView) return;
 
-    if (!obj) return;
+    const { localX, localY } = this.getLocalPosition(event);
 
-    obj.publish(type, {
+    const eventData = {
+      originalEvent: event,
       canvasManager: this,
-      domEvent: event,
+      type: event.type,
       x: localX,
       y: localY,
       movementX: event.movementX / this.zoom,
       movementY: event.movementY / this.zoom,
-    });
+    } as CanvasMouseEvent;
+
+    this.activeView.onMouseEvent(eventData);
   }
 
   onWheel(event: WheelEvent) {
@@ -166,14 +134,18 @@ export class CanvasManager {
     const newZoom = clamp(this.zoom + zoomChange, zoomMin, zoomMax);
     if (compareDecimals(newZoom, this.zoom)) return;
 
-    const { canvasX, canvasY } = this.getMousePosition(event);
+    const { left, top } = this.canvas.getBoundingClientRect();
+    const mouseX = event.clientX - left;
+    const mouseY = event.clientY - top;
+
     const zoomRatio = newZoom / this.zoom;
 
-    this.skewX += (canvasX - this.skewX) * (1 - zoomRatio);
-    this.skewY += (canvasY - this.skewY) * (1 - zoomRatio);
+    this.skewX += (mouseX - this.skewX) * (1 - zoomRatio);
+    this.skewY += (mouseY - this.skewY) * (1 - zoomRatio);
     this.zoom = newZoom;
 
-    this.scheduleRedraw();
+    this.applyTransform();
+    this.isDirty = true;
   }
 
   onMouseDown(event: MouseEvent) {
@@ -194,7 +166,8 @@ export class CanvasManager {
     this.skewX += event.movementX;
     this.skewY += event.movementY;
 
-    this.scheduleRedraw();
+    this.applyTransform();
+    this.isDirty = true;
   }
 
   onMouseLeave() {
